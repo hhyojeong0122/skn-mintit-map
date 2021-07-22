@@ -1,42 +1,22 @@
-import React, { useCallback, useEffect, useRef, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import { get } from "lodash";
-import useDebounce from "./hooks/useDebounce";
 import assets from "./constants/assets";
-
-const { kakao, ReactNativeWebView } = window;
+const { kakao } = window;
 
 function App() {
   const [map, setMap] = useState();
-  const [message, setMessage] = useState("MESSAGE");
-  const [atmList, setAtmList] = useState([]);
   const [event, setEvent] = useState()
   const [location, setLocation] = useState({
     latitude: 37.56859,
     longitude: 126.987162,
   });
 
-  // RN => Webview (받음)
-  const handleNativeEvent = useCallback((event) => {
-    const dataString = JSON.parse(get(event, "data"));
-
-    if (dataString) {
-      const { data, type } = dataString;
-      setEvent(type);
-      postMessage(type);
-
-      switch (type) {
-        case "fetch_atm_list":
-          setAtmList(data);
-      }
-    }
-  }, []);
-
   const postMessage = (type, data) => {
-    const message = JSON.stringify({ type, data });
-    ReactNativeWebView.postMessage(message);
+    const message = JSON.stringify({ type: type , data: data });
+    window.ReactNativeWebView.postMessage(message);
   };
 
-  // Marker 생성
+  //Marker 생성
   const createMarker = (atm) => {
     const { lat, lon, com_main_num } = atm;
 
@@ -92,9 +72,18 @@ function App() {
     );
   };
 
+  const handleNativeEvent = (event) => {
+    const { type, data } = JSON.parse(event.data);
 
-  // **** UseEffect **** //
+    setEvent({ type: type, data: data });
 
+    if (type === "fetch_atm_list") {
+      postMessage(type);
+      return;
+    }
+
+    postMessage(type, data);
+  };
 
   // Kakao map
   useEffect(() => {
@@ -105,38 +94,39 @@ function App() {
       level: 3,
     };
     setMap(new kakao.maps.Map(container, options));
+    postMessage("map_load_complete");
 
-    if (ReactNativeWebView) {
+    if (window.ReactNativeWebView) {
       document.addEventListener("message", handleNativeEvent);
       window.addEventListener("message", handleNativeEvent);
     }
-
     return () => {
       document.removeEventListener("message", handleNativeEvent);
       window.removeEventListener("message", handleNativeEvent);
     };
   }, []);
 
-  // Kakao map update
   useEffect(() => {
-    if (map && !!event) {
-      switch (event) {
-        case "fetch_atm_list":
-          const markers = atmList.map((atm) => createMarker(atm));
-          markers.map((marker) => {
-            marker.setMap(map);
-            kakao.maps.event.addListener(marker, "click", () => {
-              postMessage("click_marker", marker.atmInfo);
-              const msg = Object.keys(marker);
-              setMessage(`${msg}`);
-            });
-            postMessage("edsfsdfsdfsdfsd")
-          })
-      }
+    const type = get(event, "type");
+
+    switch (type) {
+      case "fetch_atm_list" :
+        const atmList = get(event, "data");
+        const markers = atmList.map((atm) => createMarker(atm));
+        markers.map((marker) => {
+          marker.setMap(map);
+          kakao.maps.event.addListener(marker, "click", () => {
+            postMessage("click_marker", marker.atmInfo);
+          });
+        });
+        break;
+
+      default:
+        postMessage("not selected type");
+        break;
     }
   }, [map, event]);
 
-  // Map eventListener
   useEffect(() => {
     if (map) {
       kakao.maps.event.addListener(map, "click", () => {
@@ -169,8 +159,8 @@ function App() {
           transform: "translateX(-50%)",
         }}
       >
-        <p>{message}</p>
-        <p>{event}</p>
+        <p>{event?.type}</p>
+        {/*<p>{event?.data}</p>*/}
       </div>
     </div>
   );
