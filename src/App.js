@@ -1,11 +1,16 @@
 import React, { useCallback, useEffect, useState } from "react";
 import { get } from "lodash";
 import assets from "./constants/assets";
+import useDebounce from "./hooks/useDebounce";
 const { kakao } = window;
+
+const GET_DIRECTIONS = "get_directions";
+const FETCH_ATM_LIST = "fetch_atm_list";
 
 function App() {
   const [map, setMap] = useState();
   const [event, setEvent] = useState()
+  const [mapCenter, setMapCenter] = useDebounce();
   const [location, setLocation] = useState({
     latitude: 37.56859,
     longitude: 126.987162,
@@ -95,6 +100,7 @@ function App() {
     };
     setMap(new kakao.maps.Map(container, options));
     postMessage("map_load_complete");
+    postMessage("current location: ", location)
 
     if (window.ReactNativeWebView) {
       document.addEventListener("message", handleNativeEvent);
@@ -110,15 +116,33 @@ function App() {
     const type = get(event, "type");
 
     switch (type) {
-      case "fetch_atm_list" :
+      case FETCH_ATM_LIST :
         const atmList = get(event, "data");
         const markers = atmList.map((atm) => createMarker(atm));
+        const clusterer = new kakao.maps.MarkerClusterer({
+          map: map,
+          averageCenter: true,
+          minLevel: 8
+        });
+        clusterer.addMarkers(markers);
         markers.map((marker) => {
           marker.setMap(map);
           kakao.maps.event.addListener(marker, "click", () => {
             postMessage("click_marker", marker.atmInfo);
+            const moveLatLng = new kakao.maps.LatLng(marker.atmInfo.lat, marker.atmInfo.lon);
+            map.panTo(moveLatLng);
           });
         });
+        break;
+
+      case GET_DIRECTIONS :
+        const latitude = parseFloat(get(event, "data.latitude", 10));
+        const longitude = parseFloat(get(event, "data.longitude", 10));
+        const moveLatLng = new kakao.maps.LatLng(latitude, longitude);
+        map.setCenter(moveLatLng);
+        map.panTo(moveLatLng);
+        postMessage("get direction lat", latitude);
+        postMessage("get direction lon", longitude);
         break;
 
       default:
@@ -133,7 +157,7 @@ function App() {
         postMessage("click_map");
       });
     }
-  }, [map])
+  }, [map]);
 
 
   // **** Render **** //
@@ -144,8 +168,8 @@ function App() {
       <div
         id="map"
         style={{
-          width: "100vmax",
-          height: "100vmax",
+          width: "100vw",
+          height: "100vh",
         }}
       />
       <div
