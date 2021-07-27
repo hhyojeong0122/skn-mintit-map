@@ -2,6 +2,7 @@ import React, { useCallback, useEffect, useState } from "react";
 import { get } from "lodash";
 import assets from "./constants/assets";
 import useDebounce from "./hooks/useDebounce";
+
 const { kakao } = window;
 
 const GET_DIRECTIONS = "get_directions";
@@ -9,7 +10,7 @@ const FETCH_ATM_LIST = "fetch_atm_list";
 
 function App() {
   const [map, setMap] = useState();
-  const [event, setEvent] = useState()
+  const [event, setEvent] = useState();
   const [mapCenter, setMapCenter] = useDebounce();
   const [location, setLocation] = useState({
     latitude: 37.56859,
@@ -17,7 +18,10 @@ function App() {
   });
 
   const postMessage = (type, data) => {
-    const message = JSON.stringify({ type: type , data: data });
+    const message = JSON.stringify({
+      type: type,
+      data: data,
+    });
     window.ReactNativeWebView.postMessage(message);
   };
 
@@ -32,7 +36,7 @@ function App() {
       position,
       clickable: true,
     });
-    marker.atmInfo = atm
+    marker.atmInfo = atm;
 
     return marker;
   };
@@ -43,44 +47,43 @@ function App() {
     const options = { offset: new kakao.maps.Point(24, 48) };
     let imgRender;
 
-    switch (com_main_num){
-      case 1485 : // SKT
-        imgRender = assets.IC_PIN_SK
+    switch (com_main_num) {
+      case 1485: // SKT
+        imgRender = assets.IC_PIN_SK;
         break;
-      case 923 : // 삼성
-        imgRender = assets.IC_PIN_SAMSUNG
+      case 923: // 삼성
+        imgRender = assets.IC_PIN_SAMSUNG;
         break;
-      case 598 : // 이마트
-        imgRender = assets.IC_PIN_EMART
+      case 598: // 이마트
+        imgRender = assets.IC_PIN_EMART;
         break;
-      case 575 : // 홈플러스
-        imgRender = assets.IC_PIN_HOMEPLUS
+      case 575: // 홈플러스
+        imgRender = assets.IC_PIN_HOMEPLUS;
         break;
-      case 998 : // 롯데마트
-        imgRender = assets.IC_PIN_LOTTE
+      case 998: // 롯데마트
+        imgRender = assets.IC_PIN_LOTTE;
         break;
-      case 4043 : // 하이마트
-        imgRender = assets.IC_PIN_HIMART
+      case 4043: // 하이마트
+        imgRender = assets.IC_PIN_HIMART;
         break;
-      case 3978 : // 우체국
-        imgRender = assets.IC_PIN_POST
+      case 3978: // 우체국
+        imgRender = assets.IC_PIN_POST;
         break;
-      default :
-        imgRender = assets.IC_PIN_MINTIT
+      default:
+        imgRender = assets.IC_PIN_MINTIT;
         break;
     }
 
-    return new kakao.maps.MarkerImage(
-      imgRender,
-      size,
-      options
-    );
+    return new kakao.maps.MarkerImage(imgRender, size, options);
   };
 
   const handleNativeEvent = (event) => {
     const { type, data } = JSON.parse(event.data);
 
-    setEvent({ type: type, data: data });
+    setEvent({
+      type: type,
+      data: data,
+    });
 
     if (type === "fetch_atm_list") {
       postMessage(type);
@@ -100,7 +103,7 @@ function App() {
     };
     setMap(new kakao.maps.Map(container, options));
     postMessage("map_load_complete");
-    postMessage("current location: ", location)
+    postMessage("current location: ", location);
 
     if (window.ReactNativeWebView) {
       document.addEventListener("message", handleNativeEvent);
@@ -116,26 +119,29 @@ function App() {
     const type = get(event, "type");
 
     switch (type) {
-      case FETCH_ATM_LIST :
+      case FETCH_ATM_LIST:
         const atmList = get(event, "data");
         const markers = atmList.map((atm) => createMarker(atm));
         const clusterer = new kakao.maps.MarkerClusterer({
           map: map,
           averageCenter: true,
-          minLevel: 8
+          minLevel: 8,
         });
         clusterer.addMarkers(markers);
         markers.map((marker) => {
           marker.setMap(map);
           kakao.maps.event.addListener(marker, "click", () => {
             postMessage("click_marker", marker.atmInfo);
-            const moveLatLng = new kakao.maps.LatLng(marker.atmInfo.lat, marker.atmInfo.lon);
+            const moveLatLng = new kakao.maps.LatLng(
+              marker.atmInfo.lat,
+              marker.atmInfo.lon
+            );
             map.panTo(moveLatLng);
           });
         });
         break;
 
-      case GET_DIRECTIONS :
+      case GET_DIRECTIONS:
         const latitude = parseFloat(get(event, "data.latitude", 10));
         const longitude = parseFloat(get(event, "data.longitude", 10));
         const moveLatLng = new kakao.maps.LatLng(latitude, longitude);
@@ -159,12 +165,10 @@ function App() {
     }
   }, [map]);
 
-
   // **** Render **** //
 
-
   return (
-    <div className="App" >
+    <div className="App">
       <div
         id="map"
         style={{
@@ -172,20 +176,20 @@ function App() {
           height: "100vh",
         }}
       />
-      <div
-        style={{
-          position: "absolute",
-          zIndex: 10,
-          left: "50%",
-          top: "10%",
-          background: "white",
-          padding: 15,
-          transform: "translateX(-50%)",
-        }}
-      >
-        <p>{event?.type}</p>
-        {/*<p>{event?.data}</p>*/}
-      </div>
+      {/*<div*/}
+      {/*  style={{*/}
+      {/*    position: "absolute",*/}
+      {/*    zIndex: 10,*/}
+      {/*    left: "50%",*/}
+      {/*    top: "10%",*/}
+      {/*    background: "white",*/}
+      {/*    padding: 15,*/}
+      {/*    transform: "translateX(-50%)",*/}
+      {/*  }}*/}
+      {/*>*/}
+      {/*  <p>{event?.type}</p>*/}
+      {/*  /!*<p>{event?.data}</p>*!/*/}
+      {/*</div>*/}
     </div>
   );
 }
