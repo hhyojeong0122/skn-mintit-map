@@ -22,7 +22,9 @@ function App() {
       type: type,
       data: data,
     });
-    window.ReactNativeWebView.postMessage(message);
+    if (!!window?.ReactNativeWebView) {
+      window.ReactNativeWebView.postMessage(message);
+    }
   };
 
   //Marker 생성
