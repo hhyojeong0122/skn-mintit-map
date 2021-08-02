@@ -1,22 +1,19 @@
-import React, { useCallback, useEffect, useState, useRef } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import { get } from "lodash";
-import useDebounce from "./hooks/useDebounce";
-import {createMarkerImage} from "./utils"
-import assets from "./constants/assets";
-import actions from "./constants/actions";
-
+import assets from "../../constants/assets";
+import useDebounce from "../../hooks/useDebounce";
 const { kakao } = window;
 
-function App() {
+const GET_DIRECTIONS = "get_directions";
+const FETCH_ATM_LIST = "fetch_atm_list";
+
+export default function AtmMapPage() {
   const [map, setMap] = useState();
   const [event, setEvent] = useState()
-  const selectedMarker = useRef();
-  const [mapCenter, setMapCenter] = useDebounce();
   const [location, setLocation] = useState({
     latitude: 37.56859,
     longitude: 126.987162,
   });
-  const [atmList, setAtmList] = useState([]);
 
   const postMessage = (type, data) => {
     const message = JSON.stringify({ type: type , data: data });
@@ -25,7 +22,7 @@ function App() {
 
   //Marker 생성
   const createMarker = (atm) => {
-    const {lat, lon, com_main_num } = atm;
+    const { lat, lon, com_main_num } = atm;
 
     const image = createMarkerImage(com_main_num);
     const position = new kakao.maps.LatLng(lat, lon);
@@ -34,10 +31,49 @@ function App() {
       position,
       clickable: true,
     });
-    marker.normalImage = image;
-    marker.atmInfo = atm;
+    marker.atmInfo = atm
 
     return marker;
+  };
+
+  // Marker 이미지 생성
+  const createMarkerImage = (com_main_num) => {
+    const size = new kakao.maps.Size(48, 48);
+    const options = { offset: new kakao.maps.Point(24, 48) };
+    let imgRender;
+
+    switch (com_main_num){
+      case 1485 : // SKT
+        imgRender = assets.IC_PIN_SK
+        break;
+      case 923 : // 삼성
+        imgRender = assets.IC_PIN_SAMSUNG
+        break;
+      case 598 : // 이마트
+        imgRender = assets.IC_PIN_EMART
+        break;
+      case 575 : // 홈플러스
+        imgRender = assets.IC_PIN_HOMEPLUS
+        break;
+      case 998 : // 롯데마트
+        imgRender = assets.IC_PIN_LOTTE
+        break;
+      case 4043 : // 하이마트
+        imgRender = assets.IC_PIN_HIMART
+        break;
+      case 3978 : // 우체국
+        imgRender = assets.IC_PIN_POST
+        break;
+      default :
+        imgRender = assets.IC_PIN_MINTIT
+        break;
+    }
+
+    return new kakao.maps.MarkerImage(
+      imgRender,
+      size,
+      options
+    );
   };
 
   const handleNativeEvent = (event) => {
@@ -45,7 +81,7 @@ function App() {
 
     setEvent({ type: type, data: data });
 
-    if (type === actions.FETCH_ATM_LIST) {
+    if (type === "fetch_atm_list") {
       postMessage(type);
       return;
     }
@@ -79,39 +115,27 @@ function App() {
     const type = get(event, "type");
 
     switch (type) {
-      case actions.FETCH_ATM_LIST :
-        const data = get(event, "data");
-        const markers = data.map((atm) => createMarker(atm));
+      case FETCH_ATM_LIST :
+        const atmList = get(event, "data");
+        const markers = atmList.map((atm) => createMarker(atm));
         const clusterer = new kakao.maps.MarkerClusterer({
           map: map,
           averageCenter: true, // 클러스터에 포함된 마커들의 평균 위치를 클러스터 마커 위치로 설정
           minLevel: 8, // 클러스터 할 최소 지도 레벨
           disableClickZoom: true // 클러스터 마커를 클릭했을 때 지도가 확대되지 않도록 설정한다
         });
-        setAtmList(markers);
         clusterer.addMarkers(markers);
-
         markers.map((marker) => {
           marker.setMap(map);
-
-          const activeMarkerImage = createMarkerImage(marker.atmInfo.com_main_num, true);
           kakao.maps.event.addListener(marker, "click", () => {
-            const moveLatLng = new kakao.maps.LatLng(marker.atmInfo.lat, marker.atmInfo.lon);
-
-            if (!selectedMarker || selectedMarker?.current !== marker) {
-              selectedMarker.current?.setImage(selectedMarker.current.normalImage);
-              marker.setImage(activeMarkerImage);
-            }
-            selectedMarker.current = marker;
-
-            map.panTo(moveLatLng);
-            marker.setImage(activeMarkerImage);
             postMessage("click_marker", marker.atmInfo);
+            const moveLatLng = new kakao.maps.LatLng(marker.atmInfo.lat, marker.atmInfo.lon);
+            map.panTo(moveLatLng);
           });
         });
         break;
 
-      case actions.GET_DIRECTIONS :
+      case GET_DIRECTIONS :
         const latitude = parseFloat(get(event, "data.latitude", 10));
         const longitude = parseFloat(get(event, "data.longitude", 10));
         const moveLatLng = new kakao.maps.LatLng(latitude, longitude);
@@ -119,13 +143,6 @@ function App() {
         map.panTo(moveLatLng);
         postMessage("get direction lat", latitude);
         postMessage("get direction lon", longitude);
-        break;
-
-      case actions.MOVE_TO_ATM_LOCATION:
-        const targetId = get(event, "data.atmId");
-        const target = atmList.find(({atmInfo: { atm_num }}) => atm_num === targetId);
-
-        kakao.maps.event.trigger(target, "click");
         break;
 
       default:
@@ -137,12 +154,6 @@ function App() {
   useEffect(() => {
     if (map) {
       kakao.maps.event.addListener(map, "click", () => {
-        if (selectedMarker?.current) {
-          selectedMarker.current?.setImage(
-            selectedMarker.current?.normalImage
-          );
-        }
-
         postMessage("click_map");
       });
     }
@@ -178,5 +189,3 @@ function App() {
     </div>
   );
 }
-
-export default App;
