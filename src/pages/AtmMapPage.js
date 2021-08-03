@@ -19,8 +19,10 @@ export default function AtmMapPage() {
   const [atmList, setAtmList] = useState([]);
 
   const postMessage = (type, data) => {
-    const message = JSON.stringify({ type: type , data: data });
-    window.ReactNativeWebView.postMessage(message);
+    if (!!window.ReactNativeWebView) {
+      const message = JSON.stringify({ type: type , data: data });
+      window.ReactNativeWebView.postMessage(message);
+    }
   };
 
   const handleNativeEvent = (event) => {
