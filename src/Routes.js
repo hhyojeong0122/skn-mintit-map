@@ -6,7 +6,7 @@ export default function Routes() {
   return (
     <Router>
       <Switch>
-        <Route exact path="/skn-mintit-map/" component={AtmMapPage} />
+        <Route exact path="/skn-mintit-map" component={AtmMapPage} />
         <Route
           exact
           path="/skn-mintit-map/detail"
