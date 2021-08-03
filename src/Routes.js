@@ -4,12 +4,11 @@ import AtmMapDetailPage from "./pages/AtmMapDetailPage";
 
 export default function Routes() {
   return (
-    <Router basename={"https://jessehj.github.io"}>
+    <Router basename={"https://jessehj.github.io/skn-mintit-map"}>
       <Switch>
-        <Route exact path="/skn-mintit-map" component={AtmMapPage} />
+        <Route exact path="/" component={AtmMapPage} />
         <Route
-          exact
-          path="/skn-mintit-map/detail"
+          path="/detail"
           component={AtmMapDetailPage}
         />
       </Switch>
