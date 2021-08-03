@@ -1,6 +1,11 @@
 import assets from "../constants/assets";
 const { kakao } = window;
 
+export const postMessage = (type, data) => {
+  const message = JSON.stringify({ type: type , data: data });
+  window.ReactNativeWebView.postMessage(message);
+};
+
 // Marker 이미지 생성
 export const createMarkerImage = (com_main_num, isActive = false) => {
   let imgRender;
@@ -40,8 +45,8 @@ export const createMarkerImage = (com_main_num, isActive = false) => {
   }
 
   if (isActive) {
-    size = new kakao.maps.Size(40, 40);
-    options = { offset: new kakao.maps.Point(20, 20) };
+    size = new kakao.maps.Size(48, 48);
+    options = { offset: new kakao.maps.Point(24, 48) };
 
     switch (com_main_num){
       case 1485 :
@@ -76,4 +81,21 @@ export const createMarkerImage = (com_main_num, isActive = false) => {
     size,
     options
   );
+};
+
+//Marker 생성
+export const createMarker = (atm) => {
+  const { lat, lon, com_main_num } = atm;
+
+  const image = createMarkerImage(com_main_num);
+  const position = new kakao.maps.LatLng(lat, lon);
+  const marker = new kakao.maps.Marker({
+    image,
+    position,
+    clickable: true,
+  });
+  marker.normalImage = image;
+  marker.atmInfo = atm;
+
+  return marker;
 };
