@@ -53,14 +53,14 @@ export default function AtmDetailMapPage () {
       case actions.FETCH_ATM:
         const { data } = event;
 
-        const image = createMarkerImage(data.com_main_num, true);
+        const image = createMarkerImage(data.markerInfo.com_main_num, true);
         const position = new kakao.maps.LatLng(latitude, longitude);
         const marker = new kakao.maps.Marker({ image, position });
         marker.atmInfo = data;
 
         marker.setMap(map);
         map.setCenter(latLng);
-        postMessage(actions.FETCH_ATM, latitude);
+        postMessage(actions.FETCH_ATM, data);
         break;
 
       case actions.GET_ADDRESS:
@@ -89,6 +89,7 @@ export default function AtmDetailMapPage () {
         style={{
           width: "100vw",
           height: "100vh",
+          pointerEvents: "none"
         }}
       />
       {/*<div*/}

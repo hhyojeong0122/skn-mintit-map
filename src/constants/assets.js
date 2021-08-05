@@ -14,6 +14,7 @@ import IC_PIN_HOMEPLUS_INACTIVE from "../assets/ic_pin_homeplus_inactive.png"
 import IC_PIN_LOTTE_INACTIVE from "../assets/ic_pin_lotte_inactive.png"
 import IC_PIN_HIMART_INACTIVE from "../assets/ic_pin_himart_inactive.png"
 import IC_PIN_POST_INACTIVE from "../assets/ic_pin_post_inactive.png"
+import IC_MY_LOCATION from "../assets/ic_mylocation.png"
 
 export default {
   IC_PIN_SK,
@@ -31,5 +32,6 @@ export default {
   IC_PIN_HOMEPLUS_INACTIVE,
   IC_PIN_LOTTE_INACTIVE,
   IC_PIN_HIMART_INACTIVE,
-  IC_PIN_POST_INACTIVE
+  IC_PIN_POST_INACTIVE,
+  IC_MY_LOCATION
 }

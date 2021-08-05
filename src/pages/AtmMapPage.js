@@ -16,6 +16,8 @@ export default function AtmMapPage() {
     latitude: 37.5681138,
     longitude: 126.9805044,
   });
+  const [myLocation, setMyLocation] = useState(null);
+  const [myLocationMarker, setMyLocationMarker] = useState(null);
   const [atmList, setAtmList] = useState([]);
 
   const postMessage = (type, data) => {
@@ -71,7 +73,7 @@ export default function AtmMapPage() {
           map: map,
           averageCenter: true, // 클러스터에 포함된 마커들의 평균 위치를 클러스터 마커 위치로 설정
           minLevel: 8, // 클러스터 할 최소 지도 레벨
-          disableClickZoom: true // 클러스터 마커를 클릭했을 때 지도가 확대되지 않도록 설정한다
+          disableClickZoom: true, // 클러스터 마커를 클릭했을 때 지도가 확대되지 않도록 설정한다
         });
         setAtmList(markers);
         clusterer.addMarkers(markers);
@@ -97,9 +99,26 @@ export default function AtmMapPage() {
         break;
 
       case actions.GET_DIRECTIONS :
-        const latitude = parseFloat(get(event, "data.latitude", 10));
-        const longitude = parseFloat(get(event, "data.longitude", 10));
+        const latitude = parseFloat(get(event, "data.latitude"), 10);
+        const longitude = parseFloat(get(event, "data.longitude"), 10);
         const moveLatLng = new kakao.maps.LatLng(latitude, longitude);
+
+        if (myLocation === null) {
+          const myLocationImgSrc = assets.IC_MY_LOCATION;
+          const myLocationImgSize = new kakao.maps.Size(28 * 2.5, 28 * 2.5);
+          const myLocationImgOption = { offset: new kakao.maps.Point(14, 14) };
+          const myLocationImg = new kakao.maps.MarkerImage(myLocationImgSrc, myLocationImgSize, myLocationImgOption);
+          const myLocationMarker = new kakao.maps.Marker({
+            position: moveLatLng,
+            image: myLocationImg
+          });
+
+          myLocationMarker.setMap(map);
+          setMyLocationMarker(myLocationMarker);
+        }
+
+        setMyLocation(latitude, longitude);
+        myLocationMarker !== null && myLocationMarker.setPosition(moveLatLng);
         map.setCenter(moveLatLng);
         map.panTo(moveLatLng);
         postMessage("get direction lat", latitude);
@@ -144,6 +163,7 @@ export default function AtmMapPage() {
         style={{
           width: "100vw",
           height: "100vh",
+          userSelect: "none"
         }}
       />
       {/*<div*/}
