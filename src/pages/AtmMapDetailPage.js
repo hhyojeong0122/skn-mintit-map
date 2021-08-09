@@ -25,7 +25,7 @@ export default function AtmDetailMapPage () {
     const { latitude, longitude } = location;
     const options = {
       center: new kakao.maps.LatLng(latitude, longitude),
-      draggable: false,
+      // draggable: false,
       level: 3,
     };
     setMap(new kakao.maps.Map(container, options));
@@ -79,7 +79,6 @@ export default function AtmDetailMapPage () {
         postMessage("not selected type");
         break;
     }
-
   }, [map, event])
 
   return (
@@ -89,12 +88,12 @@ export default function AtmDetailMapPage () {
         style={{
           width: "100vw",
           height: "100vh",
-          pointerEvents: "none"
+          // pointerEvents: "none"
         }}
       />
       {/*<div*/}
       {/*  style={{*/}
-      {/*    position: "absolute",*/}
+      {/*    position: "absolute",*o/}
       {/*    zIndex: 10,*/}
       {/*    left: "50%",*/}
       {/*    top: "10%",*/}
