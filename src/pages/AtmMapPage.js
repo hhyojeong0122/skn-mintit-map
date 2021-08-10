@@ -103,6 +103,7 @@ export default function AtmMapPage() {
         const longitude = parseFloat(get(event, "data.longitude"), 10);
         const moveLatLng = new kakao.maps.LatLng(latitude, longitude);
 
+        // 내위치 마커 생성
         if (myLocation === null) {
           const myLocationImgSrc = assets.IC_MY_LOCATION;
           const myLocationImgSize = new kakao.maps.Size(28 * 2.5, 28 * 2.5);
@@ -117,12 +118,24 @@ export default function AtmMapPage() {
           setMyLocationMarker(myLocationMarker);
         }
 
+        // 내위치 마커 세팅
         setMyLocation(latitude, longitude);
         myLocationMarker !== null && myLocationMarker.setPosition(moveLatLng);
         map.setCenter(moveLatLng);
         map.panTo(moveLatLng);
         postMessage("get direction lat", latitude);
         postMessage("get direction lon", longitude);
+
+        // 현재위치 위경도로 주소 가져오기
+        const geocoder = new kakao.maps.services.Geocoder();
+        // const coord = new kakao.maps.LatLng(myLocation.latitude, myLocation.longitude);
+        const addressCallback = (result, status) => {
+          if (status === kakao.maps.services.Status.OK) {
+            postMessage(actions.MY_LOCATION_ADDRESS, result[0].address);
+          }
+        };
+
+        geocoder.coord2Address(moveLatLng.getLng(), moveLatLng.getLat(), addressCallback);
         break;
 
       case actions.MOVE_TO_ATM_LOCATION:
@@ -149,8 +162,24 @@ export default function AtmMapPage() {
 
         postMessage("click_map");
       });
+      kakao.maps.event.addListener(map, "center_changed", () => {
+        const latlng = map.getCenter();
+        setMapCenter({
+          latitude: latlng.getLat(),
+          longitude: latlng.getLng(),
+        });
+      });
     }
   }, [map]);
+
+  useEffect(() => {
+    if (mapCenter) {
+      postMessage("current_map_center", {
+        latitude: get(mapCenter, "latitude"),
+        longitude: get(mapCenter, "longitude"),
+      });
+    }
+  }, [mapCenter]);
 
 
   // **** Render **** //

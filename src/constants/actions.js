@@ -3,7 +3,7 @@ const FETCH_ATM_LIST = "fetch_atm_list";
 const FETCH_ATM = "fetch_atm";
 const MOVE_TO_ATM_LOCATION = "move_to_atm_location";
 const GET_ADDRESS = "get_address";
-const FETCH_MY_LOCATION = "fetch_my_location"
+const MY_LOCATION_ADDRESS = "my_location_address"
 
 
 export default {
@@ -12,5 +12,5 @@ export default {
   FETCH_ATM,
   MOVE_TO_ATM_LOCATION,
   GET_ADDRESS,
-  FETCH_MY_LOCATION
+  MY_LOCATION_ADDRESS
 }
