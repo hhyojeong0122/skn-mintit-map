@@ -11,3 +11,47 @@ code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;
 }
+
+.myLocationContent {
+  display: block;
+  width: 25px;
+  height: 25px;
+  border-radius: 50%;
+  pointer-events: none;
+  box-shadow: 0 0 0 rgb(43, 211, 198);
+  animation: pulse 1.7s infinite;
+}
+
+@keyframes pulse {
+  0% {
+    box-shadow: 0 0 0 0 rgba(43, 211, 198, 0.4);
+    -moz-box-shadow: 0 0 0 0 rgba(43, 211, 198, 0.4);
+  }
+
+  70% {
+    box-shadow: 0 0 0 20px rgba(43, 211, 198, 0);
+    -moz-box-shadow: 0 0 0 20px rgba(43, 211, 198, 0);
+  }
+
+  100% {
+    box-shadow: 0 0 0 0 rgba(43, 211, 198, 0);
+    -moz-box-shadow: 0 0 0 0 rgba(43, 211, 198, 0);
+  }
+}
+
+@-webkit-keyframes pulse {
+  0% {
+    box-shadow: 0 0 0 0 rgba(43, 211, 198, 0.4);
+    -moz-box-shadow: 0 0 0 0 rgba(43, 211, 198, 0.4);
+  }
+
+  70% {
+    box-shadow: 0 0 0 20px rgba(43, 211, 198, 0);
+    -moz-box-shadow: 0 0 0 20px rgba(43, 211, 198, 0);
+  }
+
+  100% {
+    box-shadow: 0 0 0 0 rgba(43, 211, 198, 0);
+    -moz-box-shadow: 0 0 0 0 rgba(43, 211, 198, 0);
+  }
+}

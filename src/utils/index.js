@@ -95,9 +95,11 @@ export const createMarker = (atm) => {
     image,
     position,
     clickable: true,
+    zIndex: 1
   });
   marker.normalImage = image;
   marker.atmInfo = atm;
+
 
   return marker;
 };

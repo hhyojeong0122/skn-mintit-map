@@ -18,6 +18,7 @@ export default function AtmMapPage() {
   });
   const [myLocation, setMyLocation] = useState(null);
   const [myLocationMarker, setMyLocationMarker] = useState(null);
+  const [myLocationCustomOverlay, setMyLocationCustomOverlay] = useState(null);
   const [atmList, setAtmList] = useState([]);
 
   const postMessage = (type, data) => {
@@ -85,10 +86,17 @@ export default function AtmMapPage() {
           kakao.maps.event.addListener(marker, "click", () => {
             const moveLatLng = new kakao.maps.LatLng(marker.atmInfo.lat, marker.atmInfo.lon);
 
+            // 클릭한 마커가 selectedMarker 가 아니면
             if (!selectedMarker || selectedMarker?.current !== marker) {
+              // selectMarker image, zIndex 변경
               selectedMarker.current?.setImage(selectedMarker.current.normalImage);
+              selectedMarker.current?.setZIndex(1);
+
+              // 클릭한 마커의 image, zIndex 변경
               marker.setImage(activeMarkerImage);
+              marker.setZIndex(3);
             }
+            // 클릭한 마커가 selectedMarker 면
             selectedMarker.current = marker;
 
             map.panTo(moveLatLng);
@@ -103,24 +111,40 @@ export default function AtmMapPage() {
         const longitude = parseFloat(get(event, "data.longitude"), 10);
         const moveLatLng = new kakao.maps.LatLng(latitude, longitude);
 
-        // 내위치 마커 생성
         if (myLocation === null) {
+          // 내위치 마커 생성
           const myLocationImgSrc = assets.IC_MY_LOCATION;
+          // const myLocationImgSrc = <img src={assets.IC_MY_LOCATION} alt="현재위치 마커" />;
           const myLocationImgSize = new kakao.maps.Size(28 * 2.5, 28 * 2.5);
           const myLocationImgOption = { offset: new kakao.maps.Point(14, 14) };
           const myLocationImg = new kakao.maps.MarkerImage(myLocationImgSrc, myLocationImgSize, myLocationImgOption);
           const myLocationMarker = new kakao.maps.Marker({
             position: moveLatLng,
-            image: myLocationImg
+            image: myLocationImg,
+            zIndex: 5
           });
 
           myLocationMarker.setMap(map);
           setMyLocationMarker(myLocationMarker);
+
+          // 내위치 마커 커스텀 오버레이 생성 (애니메이션)
+          const myLocationContent = `<div class="myLocationContent"></div>`
+          const myLocationCustomOverlay = new kakao.maps.CustomOverlay({
+            map,
+            position: moveLatLng,
+            content: myLocationContent,
+            xAnchor: -0.35,
+            yAnchor: -0.3,
+            zIndex: 4
+          });
+
+          setMyLocationCustomOverlay(myLocationCustomOverlay);
         }
 
-        // 내위치 마커 세팅
+        // 내위치 마커, 커스텀오버레이 세팅
         setMyLocation(latitude, longitude);
         myLocationMarker !== null && myLocationMarker.setPosition(moveLatLng);
+        myLocationMarker !== null && myLocationCustomOverlay.setPosition(moveLatLng);
         map.setCenter(moveLatLng);
         map.panTo(moveLatLng);
         postMessage("get direction lat", latitude);
@@ -128,7 +152,6 @@ export default function AtmMapPage() {
 
         // 현재위치 위경도로 주소 가져오기
         const geocoder = new kakao.maps.services.Geocoder();
-        // const coord = new kakao.maps.LatLng(myLocation.latitude, myLocation.longitude);
         const addressCallback = (result, status) => {
           if (status === kakao.maps.services.Status.OK) {
             postMessage(actions.MY_LOCATION_ADDRESS, result[0].address);
