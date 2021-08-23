@@ -2,6 +2,7 @@ import React, { useCallback, useEffect, useState, useRef } from "react";
 import { get } from "lodash";
 import useDebounce from "../hooks/useDebounce";
 import { createMarkerImage, createMarker } from "../utils"
+import { clusterStyle } from "../constants/constants"
 import assets from "../constants/assets";
 import actions from "../constants/actions";
 
@@ -75,6 +76,8 @@ export default function AtmMapPage() {
           averageCenter: true, // 클러스터에 포함된 마커들의 평균 위치를 클러스터 마커 위치로 설정
           minLevel: 8, // 클러스터 할 최소 지도 레벨
           disableClickZoom: true, // 클러스터 마커를 클릭했을 때 지도가 확대되지 않도록 설정한다
+          calculator: [10, 100, 1000], // 클러스터의 크기 구분 값
+          styles: clusterStyle
         });
         setAtmList(markers);
         clusterer.addMarkers(markers);
