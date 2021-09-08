@@ -117,8 +117,7 @@ export default function AtmMapPage() {
         if (myLocation === null) {
           // 내위치 마커 생성
           const myLocationImgSrc = assets.IC_MY_LOCATION;
-          // const myLocationImgSrc = <img src={assets.IC_MY_LOCATION} alt="현재위치 마커" />;
-          const myLocationImgSize = new kakao.maps.Size(28 * 2.5, 28 * 2.5);
+          const myLocationImgSize = new kakao.maps.Size(28, 28);
           const myLocationImgOption = { offset: new kakao.maps.Point(14, 14) };
           const myLocationImg = new kakao.maps.MarkerImage(myLocationImgSrc, myLocationImgSize, myLocationImgOption);
           const myLocationMarker = new kakao.maps.Marker({
@@ -136,8 +135,8 @@ export default function AtmMapPage() {
             map,
             position: moveLatLng,
             content: myLocationContent,
-            xAnchor: -0.35,
-            yAnchor: -0.3,
+            xAnchor: 0.5,
+            yAnchor: 0.5,
             zIndex: 4
           });
 
