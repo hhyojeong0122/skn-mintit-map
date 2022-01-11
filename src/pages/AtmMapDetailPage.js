@@ -53,7 +53,7 @@ export default function AtmDetailMapPage () {
       case actions.FETCH_ATM:
         const { data } = event;
 
-        const image = createMarkerImage(data.markerInfo.com_main_num, true);
+        const image = createMarkerImage(data.markerInfo.com_main_num, data.markerInfo.sts, true);
         const position = new kakao.maps.LatLng(latitude, longitude);
         const marker = new kakao.maps.Marker({ image, position });
         marker.atmInfo = data;

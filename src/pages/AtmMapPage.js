@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState, useRef } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import { get } from "lodash";
 import useDebounce from "../hooks/useDebounce";
 import { createMarkerImage, createMarker } from "../utils"
@@ -21,6 +21,8 @@ export default function AtmMapPage() {
   const [myLocationMarker, setMyLocationMarker] = useState(null);
   const [myLocationCustomOverlay, setMyLocationCustomOverlay] = useState(null);
   const [atmList, setAtmList] = useState([]);
+  const [currentMarkers, setCurrentMarkers] = useState([]);
+  const [clusterer, setClusterer] = useState();
 
   const postMessage = (type, data) => {
     if (!!window.ReactNativeWebView) {
@@ -32,9 +34,9 @@ export default function AtmMapPage() {
   const handleNativeEvent = (event) => {
     const { type, data } = JSON.parse(event.data);
 
-    setEvent({ type: type, data: data });
+    setEvent({ type, data });
 
-    if (type === actions.FETCH_ATM_LIST) {
+    if (type === actions.FETCH_ATM_LIST || type === actions.FILTER_ATM_LIST) {
       postMessage(type);
       return;
     }
@@ -69,23 +71,16 @@ export default function AtmMapPage() {
 
     switch (type) {
       case actions.FETCH_ATM_LIST :
+      case actions.FILTER_ATM_LIST :
+        currentMarkers.forEach((maker) => { maker.setMap(null); });
         const data = get(event, "data");
-        const markers = data.map((atm) => createMarker(atm));
-        const clusterer = new kakao.maps.MarkerClusterer({
-          map: map,
-          averageCenter: true, // 클러스터에 포함된 마커들의 평균 위치를 클러스터 마커 위치로 설정
-          minLevel: 8, // 클러스터 할 최소 지도 레벨
-          disableClickZoom: true, // 클러스터 마커를 클릭했을 때 지도가 확대되지 않도록 설정한다
-          calculator: [10, 100, 1000], // 클러스터의 크기 구분 값
-          styles: clusterStyle
-        });
-        setAtmList(markers);
-        clusterer.addMarkers(markers);
 
-        markers.map((marker) => {
-          marker.setMap(map);
+        let markers = [];
+        data.map((atm) => {
+          const marker = createMarker(atm);
+          markers.push(marker);
 
-          const activeMarkerImage = createMarkerImage(marker.atmInfo.com_main_num, true);
+          const activeMarkerImage = createMarkerImage(marker.atmInfo.com_main_num, marker.atmInfo.sts, true);
           kakao.maps.event.addListener(marker, "click", () => {
             const moveLatLng = new kakao.maps.LatLng(marker.atmInfo.lat, marker.atmInfo.lon);
 
@@ -104,9 +99,12 @@ export default function AtmMapPage() {
 
             map.panTo(moveLatLng);
             marker.setImage(activeMarkerImage);
-            postMessage("click_marker", marker.atmInfo);
+            postMessage(actions.CLICK_MARKER, marker.atmInfo);
           });
         });
+
+        setCurrentMarkers(markers);
+        setAtmList(markers);
         break;
 
       case actions.GET_DIRECTIONS :
@@ -176,6 +174,26 @@ export default function AtmMapPage() {
     }
   }, [map, event]);
 
+  // currentMarkers 수정 될때마다 클러스티러 clear 및 set
+  useEffect(() => {
+    if (clusterer) { clusterer.clear(); }
+
+    setClusterer(new kakao.maps.MarkerClusterer({
+      map: map,
+      minLevel: 8, // 클러스터 할 최소 지도 레벨
+      averageCenter: true, // 클러스터에 포함된 마커들의 평균 위치를 클러스터 마커 위치로 설정
+      disableClickZoom: true, // 클러스터 마커를 클릭했을 때 지도가 확대되지 않도록 설정한다
+      calculator: [10, 100, 1000], // 클러스터의 크기 구분 값
+      styles: clusterStyle
+    }));
+  }, [currentMarkers]);
+
+  useEffect(() => {
+    if (clusterer) {
+      clusterer.addMarkers(currentMarkers);
+    }
+  }, [clusterer]);
+
   useEffect(() => {
     if (map) {
       kakao.maps.event.addListener(map, "click", () => {
@@ -184,8 +202,7 @@ export default function AtmMapPage() {
             selectedMarker.current?.normalImage
           );
         }
-
-        postMessage("click_map");
+        postMessage(actions.CLICK_MAP);
       });
       kakao.maps.event.addListener(map, "center_changed", () => {
         const latlng = map.getCenter();
@@ -225,9 +242,9 @@ export default function AtmMapPage() {
       {/*    position: "absolute",*/}
       {/*    zIndex: 10,*/}
       {/*    left: "50%",*/}
-      {/*    top: "10%",*/}
+      {/*    bottom: "10%",*/}
       {/*    background: "white",*/}
-      {/*    padding: 15,*/}
+      {/*    padding: 8,*/}
       {/*    transform: "translateX(-50%)",*/}
       {/*  }}*/}
       {/*>*/}
