@@ -78,6 +78,7 @@ export default function AtmMapPage() {
         let markers = [];
         data.map((atm) => {
           const marker = createMarker(atm);
+          marker.setMap(map);
           markers.push(marker);
 
           const activeMarkerImage = createMarkerImage(marker.atmInfo.com_main_num, marker.atmInfo.sts, true);
