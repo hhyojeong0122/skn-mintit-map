@@ -14,8 +14,8 @@ export default function AtmMapPage() {
   const selectedMarker = useRef();
   const [mapCenter, setMapCenter] = useDebounce();
   const [location, setLocation] = useState({
-    latitude: 37.5681138,
-    longitude: 126.9805044,
+    latitude: 37.57679573019775,
+    longitude: 126.89785131995227,
   });
   const [myLocation, setMyLocation] = useState(null);
   const [myLocationMarker, setMyLocationMarker] = useState(null);
