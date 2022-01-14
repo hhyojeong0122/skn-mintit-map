@@ -8,8 +8,8 @@ export default function AtmDetailMapPage () {
   const [map, setMap] = useState();
   const [event, setEvent] = useState();
   const [location, setLocation] = useState({
-    latitude: 37.5681138,
-    longitude: 126.9805044,
+    latitude: 37.57679573019775,
+    longitude: 126.89785131995227,
   });
 
   const handleNativeEvent = (event) => {
@@ -45,14 +45,15 @@ export default function AtmDetailMapPage () {
 
   useEffect(() => {
     const type = get(event, "type");
+    const data = get(event, "data");
     const latitude =  parseFloat(get(event, "data.lat", 10));
     const longitude = parseFloat(get(event, "data.lon", 10));
     const latLng = new kakao.maps.LatLng(latitude, longitude);
 
     switch (type){
       case actions.FETCH_ATM:
-        const { data } = event;
 
+        postMessage(actions.FETCH_ATM, data);
         const image = createMarkerImage(data.markerInfo.com_main_num, data.markerInfo.sts, true);
         const position = new kakao.maps.LatLng(latitude, longitude);
         const marker = new kakao.maps.Marker({ image, position });
@@ -60,7 +61,6 @@ export default function AtmDetailMapPage () {
 
         marker.setMap(map);
         map.setCenter(latLng);
-        postMessage(actions.FETCH_ATM, data);
         break;
 
       case actions.GET_ADDRESS:
@@ -93,7 +93,7 @@ export default function AtmDetailMapPage () {
       />
       {/*<div*/}
       {/*  style={{*/}
-      {/*    position: "absolute",*o/}
+      {/*    position: "absolute",*/}
       {/*    zIndex: 10,*/}
       {/*    left: "50%",*/}
       {/*    top: "10%",*/}
@@ -102,6 +102,7 @@ export default function AtmDetailMapPage () {
       {/*    transform: "translateX(-50%)",*/}
       {/*  }}*/}
       {/*>*/}
+      {/*  <p>{JSON.stringify(event?.data)}</p>*/}
       {/*  <p>{event?.type}</p>*/}
       {/*</div>*/}
     </>

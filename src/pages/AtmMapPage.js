@@ -20,8 +20,7 @@ export default function AtmMapPage() {
   const [myLocation, setMyLocation] = useState(null);
   const [myLocationMarker, setMyLocationMarker] = useState(null);
   const [myLocationCustomOverlay, setMyLocationCustomOverlay] = useState(null);
-  const [atmList, setAtmList] = useState([]);
-  const [currentMarkers, setCurrentMarkers] = useState([]);
+  const [currentAtmList, setCurrentAtmList] = useState([]);
   const [clusterer, setClusterer] = useState();
 
   const postMessage = (type, data) => {
@@ -43,6 +42,42 @@ export default function AtmMapPage() {
 
     postMessage(type, data);
   };
+
+  const fetchAtmList = () => {
+    currentAtmList.forEach((maker) => { maker.setMap(null); });
+    const data = get(event, "data.atmList");
+
+    let markers = [];
+    data.map((atm) => {
+      const marker = createMarker(atm);
+      marker.setMap(map);
+      markers.push(marker);
+
+      const activeMarkerImage = createMarkerImage(marker.atmInfo.com_main_num, marker.atmInfo.sts, true);
+      kakao.maps.event.addListener(marker, "click", () => {
+        const moveLatLng = new kakao.maps.LatLng(marker.atmInfo.lat, marker.atmInfo.lon);
+
+        // 클릭한 마커가 selectedMarker 가 아니면
+        if (!selectedMarker || selectedMarker?.current !== marker) {
+          // selectMarker image, zIndex 변경
+          selectedMarker.current?.setImage(selectedMarker.current.normalImage);
+          selectedMarker.current?.setZIndex(1);
+
+          // 클릭한 마커의 image, zIndex 변경
+          marker.setImage(activeMarkerImage);
+          marker.setZIndex(3);
+        }
+        // 클릭한 마커가 selectedMarker 면
+        selectedMarker.current = marker;
+
+        map.panTo(moveLatLng);
+        marker.setImage(activeMarkerImage);
+        postMessage(actions.CLICK_MARKER, marker.atmInfo);
+      });
+    });
+
+    setCurrentAtmList(markers);
+  }
 
   // Kakao map
   useEffect(() => {
@@ -72,40 +107,7 @@ export default function AtmMapPage() {
     switch (type) {
       case actions.FETCH_ATM_LIST :
       case actions.FILTER_ATM_LIST :
-        currentMarkers.forEach((maker) => { maker.setMap(null); });
-        const data = get(event, "data");
-
-        let markers = [];
-        data.map((atm) => {
-          const marker = createMarker(atm);
-          marker.setMap(map);
-          markers.push(marker);
-
-          const activeMarkerImage = createMarkerImage(marker.atmInfo.com_main_num, marker.atmInfo.sts, true);
-          kakao.maps.event.addListener(marker, "click", () => {
-            const moveLatLng = new kakao.maps.LatLng(marker.atmInfo.lat, marker.atmInfo.lon);
-
-            // 클릭한 마커가 selectedMarker 가 아니면
-            if (!selectedMarker || selectedMarker?.current !== marker) {
-              // selectMarker image, zIndex 변경
-              selectedMarker.current?.setImage(selectedMarker.current.normalImage);
-              selectedMarker.current?.setZIndex(1);
-
-              // 클릭한 마커의 image, zIndex 변경
-              marker.setImage(activeMarkerImage);
-              marker.setZIndex(3);
-            }
-            // 클릭한 마커가 selectedMarker 면
-            selectedMarker.current = marker;
-
-            map.panTo(moveLatLng);
-            marker.setImage(activeMarkerImage);
-            postMessage(actions.CLICK_MARKER, marker.atmInfo);
-          });
-        });
-
-        setCurrentMarkers(markers);
-        setAtmList(markers);
+        fetchAtmList();
         break;
 
       case actions.GET_DIRECTIONS :
@@ -164,7 +166,7 @@ export default function AtmMapPage() {
 
       case actions.MOVE_TO_ATM_LOCATION:
         const targetId = get(event, "data.atmId");
-        const target = atmList.find(({atmInfo: { atm_num }}) => atm_num === targetId);
+        const target = currentAtmList.find(({atmInfo: { atm_num }}) => atm_num === targetId);
 
         kakao.maps.event.trigger(target, "click");
         break;
@@ -175,7 +177,7 @@ export default function AtmMapPage() {
     }
   }, [map, event]);
 
-  // currentMarkers 수정 될때마다 클러스티러 clear 및 set
+  // currentAtmList 수정 될때마다 클러스티러 clear 및 set
   useEffect(() => {
     if (clusterer) { clusterer.clear(); }
 
@@ -187,11 +189,11 @@ export default function AtmMapPage() {
       calculator: [10, 100, 1000], // 클러스터의 크기 구분 값
       styles: clusterStyle
     }));
-  }, [currentMarkers]);
+  }, [map, currentAtmList]);
 
   useEffect(() => {
     if (clusterer) {
-      clusterer.addMarkers(currentMarkers);
+      clusterer.addMarkers(currentAtmList);
     }
   }, [clusterer]);
 
