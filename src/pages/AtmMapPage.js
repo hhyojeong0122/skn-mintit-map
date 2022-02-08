@@ -207,6 +207,9 @@ export default function AtmMapPage() {
         }
         postMessage(actions.CLICK_MAP);
       });
+      kakao.maps.event.addListener(map, "dragend", () => {
+        postMessage(actions.DRAGEND_MAP);
+      });
       kakao.maps.event.addListener(map, "center_changed", () => {
         const latlng = map.getCenter();
         setMapCenter({

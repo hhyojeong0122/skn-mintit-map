@@ -7,6 +7,7 @@ const GET_ADDRESS = "get_address";
 const MY_LOCATION_ADDRESS = "my_location_address";
 const CLICK_MARKER = "click_marker";
 const CLICK_MAP = "click_map";
+const DRAGEND_MAP = "dragend_map";
 const ATM_LIST_LOAD_COMPLETE = "atm_list_load_complete";
 
 export default {
@@ -19,5 +20,6 @@ export default {
   MY_LOCATION_ADDRESS,
   CLICK_MARKER,
   CLICK_MAP,
+  DRAGEND_MAP,
   ATM_LIST_LOAD_COMPLETE
 }
