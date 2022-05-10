@@ -52,6 +52,12 @@ export const createMarkerImage = (com_main_num, sts, isActive = false) => {
         case 4573: // KT
           imgRender = assets.IC_PIN_KT_INACTIVE_GRAY;
           break;
+        case 7442: // 전자랜드
+          imgRender = assets.IC_PIN_E_LAND_INACTIVE_GRAY;
+          break;
+        case 7931: // LG베스트샵
+          imgRender = assets.IC_PIN_LG_BEST_SHOP_INACTIVE_GRAY;
+          break;
         default:
           imgRender = assets.IC_PIN_MINTIT_INACTIVE_GRAY;
           break;
@@ -84,6 +90,12 @@ export const createMarkerImage = (com_main_num, sts, isActive = false) => {
           break;
         case 4573:
           imgRender = assets.IC_PIN_KT_INACTIVE;
+          break;
+        case 7442:
+          imgRender = assets.IC_PIN_E_LAND_INACTIVE;
+          break;
+        case 7931:
+          imgRender = assets.IC_PIN_LG_BEST_SHOP_INACTIVE;
           break;
         default:
           imgRender = assets.IC_PIN_MINTIT_INACTIVE;
@@ -125,6 +137,12 @@ export const createMarkerImage = (com_main_num, sts, isActive = false) => {
         case 4573:
           imgRender = assets.IC_PIN_KT_GRAY;
           break;
+        case 7442:
+          imgRender = assets.IC_PIN_E_LAND_GRAY;
+          break;
+        case 7931:
+          imgRender = assets.IC_PIN_LG_BEST_SHOP_GRAY;
+          break;
         default:
           imgRender = assets.IC_PIN_MINTIT_GRAY;
           break;
@@ -157,6 +175,12 @@ export const createMarkerImage = (com_main_num, sts, isActive = false) => {
           break;
         case 4573:
           imgRender = assets.IC_PIN_KT;
+          break;
+        case 7442:
+          imgRender = assets.IC_PIN_E_LAND;
+          break;
+        case 7931:
+          imgRender = assets.IC_PIN_LG_BEST_SHOP;
           break;
         default:
           imgRender = assets.IC_PIN_MINTIT;

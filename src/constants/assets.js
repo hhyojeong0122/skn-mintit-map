@@ -8,6 +8,8 @@ import IC_PIN_HIMART from "../assets/ic_pin_himart.png"
 import IC_PIN_POST from "../assets/ic_pin_post.png"
 import IC_PIN_UPLUS from "../assets/ic_pin_uplus.png"
 import IC_PIN_KT from "../assets/ic_pin_kt.png"
+import IC_PIN_E_LAND from "../assets/ic_pin_e_land.png"
+import IC_PIN_LG_BEST_SHOP from "../assets/ic_pin_lg_best_shop.png"
 
 import IC_PIN_SK_GRAY from "../assets/ic_pin_sk_gray.png"
 import IC_PIN_EMART_GRAY from "../assets/ic_pin_emart_gray.png"
@@ -19,6 +21,8 @@ import IC_PIN_HIMART_GRAY from "../assets/ic_pin_himart_gray.png"
 import IC_PIN_POST_GRAY from "../assets/ic_pin_post_gray.png"
 import IC_PIN_UPLUS_GRAY from "../assets/ic_pin_uplus_gray.png"
 import IC_PIN_KT_GRAY from "../assets/ic_pin_kt_gray.png"
+import IC_PIN_E_LAND_GRAY from "../assets/ic_pin_e_land_gray.png"
+import IC_PIN_LG_BEST_SHOP_GRAY from "../assets/ic_pin_lg_best_shop_gray.png"
 
 import IC_PIN_SK_INACTIVE from "../assets/ic_pin_sk_inactive.png"
 import IC_PIN_EMART_INACTIVE from "../assets/ic_pin_emart_inactive.png"
@@ -30,6 +34,8 @@ import IC_PIN_HIMART_INACTIVE from "../assets/ic_pin_himart_inactive.png"
 import IC_PIN_POST_INACTIVE from "../assets/ic_pin_post_inactive.png"
 import IC_PIN_UPLUS_INACTIVE from "../assets/ic_pin_uplus_inactive.png"
 import IC_PIN_KT_INACTIVE from "../assets/ic_pin_kt_inactive.png"
+import IC_PIN_E_LAND_INACTIVE from "../assets/ic_pin_e_land_inactive.png"
+import IC_PIN_LG_BEST_SHOP_INACTIVE from "../assets/ic_pin_lg_best_shop_inactive.png"
 
 import IC_PIN_SK_INACTIVE_GRAY from "../assets/ic_pin_sk_inactive_gray.png"
 import IC_PIN_EMART_INACTIVE_GRAY from "../assets/ic_pin_emart_inactive_gray.png"
@@ -41,6 +47,8 @@ import IC_PIN_HIMART_INACTIVE_GRAY from "../assets/ic_pin_himart_inactive_gray.p
 import IC_PIN_POST_INACTIVE_GRAY from "../assets/ic_pin_post_inactive_gray.png"
 import IC_PIN_UPLUS_INACTIVE_GRAY from "../assets/ic_pin_uplus_inactive_gray.png"
 import IC_PIN_KT_INACTIVE_GRAY from "../assets/ic_pin_kt_inactive_gray.png"
+import IC_PIN_E_LAND_INACTIVE_GRAY from "../assets/ic_pin_e_land_inactive_gray.png"
+import IC_PIN_LG_BEST_SHOP_INACTIVE_GRAY from "../assets/ic_pin_lg_best_shop_inactive_gray.png"
 
 import IC_MY_LOCATION from "../assets/ic_mylocation.png"
 
@@ -55,6 +63,8 @@ export default {
   IC_PIN_POST_INACTIVE_GRAY,
   IC_PIN_UPLUS_INACTIVE_GRAY,
   IC_PIN_KT_INACTIVE_GRAY,
+  IC_PIN_E_LAND_INACTIVE_GRAY,
+  IC_PIN_LG_BEST_SHOP_INACTIVE_GRAY,
 
   IC_PIN_SK_GRAY,
   IC_PIN_EMART_GRAY,
@@ -66,6 +76,8 @@ export default {
   IC_PIN_POST_GRAY,
   IC_PIN_UPLUS_GRAY,
   IC_PIN_KT_GRAY,
+  IC_PIN_E_LAND_GRAY,
+  IC_PIN_LG_BEST_SHOP_GRAY,
 
   IC_PIN_SK,
   IC_PIN_EMART,
@@ -77,6 +89,9 @@ export default {
   IC_PIN_POST,
   IC_PIN_UPLUS,
   IC_PIN_KT,
+  IC_PIN_E_LAND,
+  IC_PIN_LG_BEST_SHOP,
+
   IC_PIN_SK_INACTIVE,
   IC_PIN_EMART_INACTIVE,
   IC_PIN_MINTIT_INACTIVE,
@@ -87,5 +102,8 @@ export default {
   IC_PIN_POST_INACTIVE,
   IC_PIN_UPLUS_INACTIVE,
   IC_PIN_KT_INACTIVE,
+  IC_PIN_E_LAND_INACTIVE,
+  IC_PIN_LG_BEST_SHOP_INACTIVE,
+
   IC_MY_LOCATION,
 }
