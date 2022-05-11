@@ -171,6 +171,14 @@ export default function AtmMapPage() {
         kakao.maps.event.trigger(target, "click");
         break;
 
+      // atm_num => id 로 변경
+      case actions.MOVE_TO_ATM_LOCATION2:
+        const targetId2 = get(event, "data.atmId");
+        const target2 = currentAtmList.find(({atmInfo: { id }}) => id === targetId2);
+
+        kakao.maps.event.trigger(target2, "click");
+        break;
+
       default:
         postMessage("not selected type");
         break;

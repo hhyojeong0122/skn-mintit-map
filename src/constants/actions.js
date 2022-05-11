@@ -3,6 +3,7 @@ const FETCH_ATM = "fetch_atm";
 const FETCH_ATM_LIST = "fetch_atm_list";
 const FILTER_ATM_LIST = "filter_atm_list";
 const MOVE_TO_ATM_LOCATION = "move_to_atm_location";
+const MOVE_TO_ATM_LOCATION2 = "move_to_atm_location2";
 const GET_ADDRESS = "get_address";
 const MY_LOCATION_ADDRESS = "my_location_address";
 const CLICK_MARKER = "click_marker";
@@ -16,6 +17,7 @@ export default {
   FETCH_ATM_LIST,
   FILTER_ATM_LIST,
   MOVE_TO_ATM_LOCATION,
+  MOVE_TO_ATM_LOCATION2,
   GET_ADDRESS,
   MY_LOCATION_ADDRESS,
   CLICK_MARKER,
