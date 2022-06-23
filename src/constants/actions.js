@@ -10,6 +10,7 @@ const CLICK_MARKER = "click_marker";
 const CLICK_MAP = "click_map";
 const DRAGEND_MAP = "dragend_map";
 const ATM_LIST_LOAD_COMPLETE = "atm_list_load_complete";
+const ZOOM_MAP = "zoom_map";
 
 export default {
   GET_DIRECTIONS,
@@ -23,5 +24,6 @@ export default {
   CLICK_MARKER,
   CLICK_MAP,
   DRAGEND_MAP,
-  ATM_LIST_LOAD_COMPLETE
+  ATM_LIST_LOAD_COMPLETE,
+  ZOOM_MAP,
 }

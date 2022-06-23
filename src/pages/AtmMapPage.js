@@ -87,7 +87,13 @@ export default function AtmMapPage() {
       center: new kakao.maps.LatLng(latitude, longitude),
       level: 3,
     };
-    setMap(new kakao.maps.Map(container, options));
+
+    const map = new kakao.maps.Map(container, options);
+
+    const zoomControl = new kakao.maps.ZoomControl();
+    map.addControl(zoomControl, kakao.maps.ControlPosition.RIGHT);
+
+    setMap(map);
     postMessage("map_load_complete");
     postMessage("current location: ", location)
 
@@ -224,6 +230,10 @@ export default function AtmMapPage() {
           latitude: latlng.getLat(),
           longitude: latlng.getLng(),
         });
+      });
+      kakao.maps.event.addListener(map, "zoom_changed", () => {
+        const level = map.getLevel();
+        postMessage(actions.ZOOM_MAP, level);
       });
     }
   }, [map]);
