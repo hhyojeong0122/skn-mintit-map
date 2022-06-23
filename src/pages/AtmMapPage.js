@@ -225,6 +225,10 @@ export default function AtmMapPage() {
           longitude: latlng.getLng(),
         });
       });
+      kakao.maps.event.addListener(map, "zoom_chagned", () => {
+        const level = map.getLevel();
+        postMessage(actions.ZOOM_MAP, level);
+      });
     }
   }, [map]);
 
