@@ -6,6 +6,9 @@ import { clusterStyle } from "../constants/constants"
 import assets from "../constants/assets";
 import actions from "../constants/actions";
 
+const webview = {
+  log: (...log) => window.ReactNativeWebView?.postMessage(JSON.stringify({ type: 'log', data: log }))
+}
 const { kakao } = window;
 
 export default function AtmMapPage() {
@@ -43,12 +46,22 @@ export default function AtmMapPage() {
     postMessage(type, data);
   };
 
-  const fetchAtmList = () => {
-    currentAtmList.forEach((maker) => { maker.setMap(null); });
+  const fetchAtmList = (atmID) => {
     const data = get(event, "data.atmList");
 
+    if (!data.length) return;
+
+    const newAtms = data.filter(atm => currentAtmList.findIndex(marker => marker.atmInfo.atm_num === atm.atm_num) < 0);
+
+    for (const marker of currentAtmList) {
+      if (data.findIndex(atm => atm.atm_num === marker.atmInfo.atm_num) >= 0)
+        continue;
+      
+      marker.setMap(null);
+    }
+
     let markers = [];
-    data.map((atm) => {
+    for (const atm of newAtms) {
       const marker = createMarker(atm);
       marker.setMap(map);
       markers.push(marker);
@@ -74,9 +87,21 @@ export default function AtmMapPage() {
         marker.setImage(activeMarkerImage);
         postMessage(actions.CLICK_MARKER, marker.atmInfo);
       });
-    });
+    }
 
-    setCurrentAtmList(markers);
+    markers.length > 0 && setCurrentAtmList([...currentAtmList, ...markers]);
+
+    if (!atmID) return;
+
+    for (const marker of markers) {
+      const markerAtmID = marker.atmInfo.atm_num;
+
+      if (markerAtmID !== atmID) continue;
+
+      kakao.maps.event.trigger(marker, "click");
+    }
+
+    postMessage(actions.CLEAR_SEARCH_ATM);
   }
 
   // Kakao map
@@ -89,9 +114,6 @@ export default function AtmMapPage() {
     };
 
     const map = new kakao.maps.Map(container, options);
-
-    const zoomControl = new kakao.maps.ZoomControl();
-    map.addControl(zoomControl, kakao.maps.ControlPosition.RIGHT);
 
     setMap(map);
     postMessage("map_load_complete");
@@ -113,7 +135,7 @@ export default function AtmMapPage() {
     switch (type) {
       case actions.FETCH_ATM_LIST :
       case actions.FILTER_ATM_LIST :
-        fetchAtmList();
+        fetchAtmList(event.data.searchAtmID);
         break;
 
       case actions.GET_DIRECTIONS :
@@ -179,10 +201,8 @@ export default function AtmMapPage() {
 
       // atm_num => id 로 변경
       case actions.MOVE_TO_ATM_LOCATION2:
-        const targetId2 = get(event, "data.atmId");
-        const target2 = currentAtmList.find(({atmInfo: { id }}) => id === targetId2);
-
-        kakao.maps.event.trigger(target2, "click");
+        const { lat, lon } = event.data;
+        map.setCenter(new kakao.maps.LatLng(parseFloat(lat), parseFloat(lon)));
         break;
 
       default:

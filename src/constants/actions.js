@@ -11,6 +11,7 @@ const CLICK_MAP = "click_map";
 const DRAGEND_MAP = "dragend_map";
 const ATM_LIST_LOAD_COMPLETE = "atm_list_load_complete";
 const ZOOM_MAP = "zoom_map";
+const CLEAR_SEARCH_ATM = "clear_search_atm";
 
 export default {
   GET_DIRECTIONS,
@@ -26,4 +27,5 @@ export default {
   DRAGEND_MAP,
   ATM_LIST_LOAD_COMPLETE,
   ZOOM_MAP,
+  CLEAR_SEARCH_ATM
 }
